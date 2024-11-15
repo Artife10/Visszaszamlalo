@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visszaszámláló Ünnepekre</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #333;
+            color: #fff;
+            overflow: hidden;
+            transition: background-image 1s ease-in-out;
+        }
+        .countdown-container {
+            text-align: center;
+            font-size: 48px;
+            font-weight: bold;
+        }
+        .time-display {
+            font-size: 64px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="countdown-container">
+        <div class="time-display" id="countdownDisplay">00:00:00</div>
+        <p id="eventDisplay">Következő ünnep</p>
+    </div>
+
+    <script>
+        // Ünnepek dátumai (éves ismétlődés)
+        const holidays = [
+            { name: "Karácsony", date: "12-25" },        // Karácsony: December 25.
+            { name: "Március 15", date: "03-15" },       // Március 15.
+            { name: "Húsvét", date: "04-09" },           // Húsvét (időpontot pontosítani kell)
+            { name: "Augusztus 20", date: "08-20" },     // Augusztus 20.
+            { name: "Október 16", date: "10-16" },       // Október 16.
+            { name: "Télapó", date: "12-06" }            // Télapó: December 6.
+        ];
+
+        // Aktuális év
+        const currentYear = new Date().getFullYear();
+
+        // Véletlenszerű háttérkép beállítása
+        const imageFolder = "images/"; // A mappa neve, ahol a képeid találhatók
+        const imageCount = 5; // Hány kép található a mappában
+
+        function setRandomBackground() {
+            const randomIndex = Math.floor(Math.random() * imageCount) + 1; // Véletlen szám 1 és 5 között
+            const imageUrl = `${imageFolder}background${randomIndex}.jpg`;  // Helyes elérési út
+            document.body.style.backgroundImage = `url(${imageUrl})`;
+            document.body.style.backgroundSize = "cover";  // Kép kitöltése az egész képernyőre
+            document.body.style.backgroundPosition = "center";  // Kép középre igazítása
+            document.body.style.backgroundRepeat = "no-repeat";  // Kép ne ismétlődjön
+        }
+
+        // Visszaszámláló frissítése
+        function updateCountdown(nextHolidayDate, nextHolidayName) {
+            const now = new Date();
+            const targetDate = new Date(`${currentYear}-${nextHolidayDate}`);
+
+            // Ha a következő ünnep már eltelt az évben, akkor jövő évre állítjuk
+            if (now > targetDate) {
+                targetDate.setFullYear(currentYear + 1);
+            }
+
+            const timeDiff = targetDate - now;
+            const months = Math.floor(timeDiff / (1000 * 60 * 60 * 24 * 30));
+            const days = Math.floor((timeDiff % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+            // Kijelző frissítése
+            document.getElementById("countdownDisplay").textContent = `${String(months).padStart(2, '0')}:${String(days).padStart(2, '0')}:${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            document.getElementById("eventDisplay").textContent = `Következő ünnep: ${nextHolidayName}`;
+
+            // Ha letelt az idő, befejezzük a számlálót
+            if (timeDiff <= 0) {
+                clearInterval(countdownInterval);
+                document.getElementById("countdownDisplay").textContent = "00:00:00";
+            }
+        }
+
+        // A következő ünnep kiszámítása
+        function getNextHoliday() {
+            const now = new Date();
+            let nextHolidayDate = null;
+            let nextHolidayName = "";
+
+            for (let holiday of holidays) {
+                const holidayDate = new Date(`${currentYear}-${holiday.date}`);
+                if (holidayDate >= now) {
+                    nextHolidayDate = holiday.date;
+                    nextHolidayName = holiday.name;
+                    break;
+                }
+            }
+
+            // Ha nincs több ünnep az idén, akkor jövő évre állítjuk
+            if (!nextHolidayDate) {
+                nextHolidayDate = holidays[0].date;
+                nextHolidayName = holidays[0].name;
+            }
+
+            return { nextHolidayDate, nextHolidayName };
+        }
+
+        // Beállítjuk a háttérképet és a visszaszámlálót
+        setRandomBackground();
+
+        const { nextHolidayDate, nextHolidayName } = getNextHoliday();
+
+        // Frissítjük a visszaszámlálót minden másodpercben
+        const countdownInterval = setInterval(function() {
+            updateCountdown(nextHolidayDate, nextHolidayName);
+        }, 1000);
+    </script>
+</body>
+</html>
