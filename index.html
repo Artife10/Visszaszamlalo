@@ -44,13 +44,13 @@
             font-family: 'Courier New', monospace;
         }
 
-
+        /*responsivitás telefonra*/
         @media only screen and (max-width: 600px) {
             .time-display{
                 font-size: 42pt;
             }
           }
-        
+        /*githubom*/
         footer{
             position: absolute;
             left: 0;
@@ -62,7 +62,7 @@
 <body>
 
     <div class="countdown-container">
-        <div class="time-display" id="countdownDisplay">00:00:00</div>
+        <div class="time-display" id="countdownDisplay">LOADING :3</div>
         <p id="eventDisplay">Következő ünnep</p>
     </div>
 
@@ -130,7 +130,7 @@
             // Ha letelt az idő, befejezzük a számlálót
             if (timeDiff <= 0) {
                 clearInterval(countdownInterval);
-                document.getElementById("countdownDisplay").textContent = "00 : 00 : 00 : 00 : 00";
+                document.getElementById("countdownDisplay").textContent = "00  00  00  00  00";
             }
         }
 
@@ -170,6 +170,7 @@
     </script>
     <footer><a href="https://github.com/Artife10">GITHUB</a></footer>
     <style>
+        /*githubom2*/
         a{
             text-decoration: none;
             color: rgb(111, 119, 146);
