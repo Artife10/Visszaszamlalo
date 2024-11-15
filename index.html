@@ -15,13 +15,30 @@
             background-color: #333;
             color: #fff;
             overflow: hidden;
+            position: relative;
             transition: background-image 1s ease-in-out;
         }
+
+        /* Pseudo elem a háttér homályosításához és sötétítéséhez */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Sötét háttér */
+            backdrop-filter: blur(5px); /* Homályosítás */
+            z-index: -1; /* A háttér mögött legyen */
+        }
+
         .countdown-container {
             text-align: center;
             font-size: 48px;
             font-weight: bold;
+            z-index: 1; /* A szöveg legyen elől */
         }
+
         .time-display {
             font-size: 64px;
             font-family: 'Courier New', monospace;
@@ -56,10 +73,19 @@
         function setRandomBackground() {
             const randomIndex = Math.floor(Math.random() * imageCount) + 1; // Véletlen szám 1 és 5 között
             const imageUrl = `${imageFolder}background${randomIndex}.jpg`;  // Helyes elérési út
-            document.body.style.backgroundImage = `url(${imageUrl})`;
-            document.body.style.backgroundSize = "cover";  // Kép kitöltése az egész képernyőre
-            document.body.style.backgroundPosition = "center";  // Kép középre igazítása
-            document.body.style.backgroundRepeat = "no-repeat";  // Kép ne ismétlődjön
+
+            // Ellenőrizzük, hogy a kép valóban betöltődik-e
+            const img = new Image();
+            img.onload = function() {
+                document.body.style.backgroundImage = `url(${imageUrl})`;
+                document.body.style.backgroundSize = "cover";  // Kép kitöltése az egész képernyőre
+                document.body.style.backgroundPosition = "center";  // Kép középre igazítása
+                document.body.style.backgroundRepeat = "no-repeat";  // Kép ne ismétlődjön
+            };
+            img.onerror = function() {
+                console.error('A háttérkép nem található: ', imageUrl);
+            };
+            img.src = imageUrl; // Kép betöltése
         }
 
         // Visszaszámláló frissítése
@@ -73,20 +99,24 @@
             }
 
             const timeDiff = targetDate - now;
-            const months = Math.floor(timeDiff / (1000 * 60 * 60 * 24 * 30));
-            const days = Math.floor((timeDiff % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
+            
+            // Hetek kiszámítása
+            const weeks = Math.floor(timeDiff / (1000 * 60 * 60 * 24 * 7));
+            
+            // A hátralévő napok, órák, percek és másodpercek kiszámítása
+            const days = Math.floor((timeDiff % (1000 * 60 * 60 * 24 * 7)) / (1000 * 60 * 60 * 24));
             const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
             // Kijelző frissítése
-            document.getElementById("countdownDisplay").textContent = `${String(months).padStart(2, '0')}:${String(days).padStart(2, '0')}:${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            document.getElementById("countdownDisplay").textContent = `${String(weeks).padStart(2, '0')} : ${String(days).padStart(2, '0')} : ${String(hours).padStart(2, '0')} : ${String(minutes).padStart(2, '0')} : ${String(seconds).padStart(2, '0')}`;
             document.getElementById("eventDisplay").textContent = `Következő ünnep: ${nextHolidayName}`;
 
             // Ha letelt az idő, befejezzük a számlálót
             if (timeDiff <= 0) {
                 clearInterval(countdownInterval);
-                document.getElementById("countdownDisplay").textContent = "00:00:00";
+                document.getElementById("countdownDisplay").textContent = "00 : 00 : 00 : 00 : 00";
             }
         }
 
@@ -124,5 +154,6 @@
             updateCountdown(nextHolidayDate, nextHolidayName);
         }, 1000);
     </script>
+
 </body>
 </html>
