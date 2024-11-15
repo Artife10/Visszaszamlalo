@@ -40,8 +40,22 @@
         }
 
         .time-display {
-            font-size: 64px;
+            font-size: 128px;
             font-family: 'Courier New', monospace;
+        }
+
+
+        @media only screen and (max-width: 600px) {
+            .time-display{
+                font-size: 42pt;
+            }
+          }
+        
+        footer{
+            position: absolute;
+            left: 0;
+            right: 1;
+            margin-bottom: -45%;
         }
     </style>
 </head>
@@ -110,7 +124,7 @@
             const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
             // Kijelző frissítése
-            document.getElementById("countdownDisplay").textContent = `${String(weeks).padStart(2, '0')} : ${String(days).padStart(2, '0')} : ${String(hours).padStart(2, '0')} : ${String(minutes).padStart(2, '0')} : ${String(seconds).padStart(2, '0')}`;
+            document.getElementById("countdownDisplay").textContent = `${String(weeks).padStart(2, '0')}  ${String(days).padStart(2, '0')}  ${String(hours).padStart(2, '0')}  ${String(minutes).padStart(2, '0')} ${String(seconds).padStart(2, '0')}`;
             document.getElementById("eventDisplay").textContent = `Következő ünnep: ${nextHolidayName}`;
 
             // Ha letelt az idő, befejezzük a számlálót
@@ -154,6 +168,13 @@
             updateCountdown(nextHolidayDate, nextHolidayName);
         }, 1000);
     </script>
-
+    <footer><a href="https://github.com/Artife10">GITHUB</a></footer>
+    <style>
+        a{
+            text-decoration: none;
+            color: rgb(111, 119, 146);
+            font-weight: bold;
+        }
+    </style>
 </body>
 </html>
